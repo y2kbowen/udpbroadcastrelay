@@ -2495,8 +2495,7 @@ srandom(time(NULL) ^ getpid());
             }
 
             struct in_addr toAddress;
-            if (rcv_inaddr.s_addr == INADDR_BROADCAST
-                || rcv_inaddr.s_addr == fromIface->dstaddr.s_addr) {
+            if (rcv_inaddr.s_addr == fromIface->dstaddr.s_addr) {
                 // Received on interface broadcast address -- rewrite to new interface broadcast addr
                 toAddress = iface->dstaddr;
             } else {
