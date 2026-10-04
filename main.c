@@ -1778,7 +1778,13 @@ void list_devices(void)
 
     for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next)
     {
+        if (ifa->ifa_addr == NULL)
+            continue;
+
+        if (ifa->ifa_addr->sa_family == AF_INET)
+        {
         printf("Interface: %s\n", ifa->ifa_name);
+        }
     }
     printf("End of interface list\n");
 }
