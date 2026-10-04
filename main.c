@@ -58,6 +58,7 @@ GNU General Public License for more details.
 #include <string.h>
 #include <arpa/inet.h>
 #include <stdio.h>
+#include <ifaddrs.h>
 #ifdef __FreeBSD__
 #include <net/if.h>
 #include <net/if_dl.h>
@@ -1673,6 +1674,7 @@ void catch_sigterm()
 void display_usage(FILE *stream, const char *arg0) {
     fprintf(stream, "usage: %s [--id ID] [--port udp-port]\n"
             "       [--dev dev1] [--dev dev2] [--dev devX]\n"
+            "       [-list-devices]\n"
             "       [-s IP] [--multicast ip1] [--multicast ipX]\n"
             "       [--msearch action[,search-term]]\n"
             "       [--blockcidr network-prefix/size]\n"
@@ -1707,6 +1709,7 @@ void display_help(const char *arg0) {
            "                 at least twice for two separate interfaces in\n"
            "                 order for this tool to have any effect.\n", MAXID);
     printf("Optional Parameters:\n"
+           " -list-devices   List all available network interfaces and exit.\n"
            "  -s IP    Sets the source IP of forwarded packets. If not\n"
            "           specified the original IP source address is used.\n"
            "           Special values :\n"
@@ -1761,6 +1764,23 @@ void display_help(const char *arg0) {
            "  -f       Forces forking to background. A PID file will be created\n"
            "           at /var/run/udpbroadcastrelay_ID.pid\n"
            "  --help|-h   Display this detailed help dialog.\n", TTL_ID_OFFSET);
+}
+
+void list_devices(void)
+{
+    printf("Listing interfaces:\n");
+    struct ifaddrs *ifap, *ifa;
+    if (getifaddrs(&ifap) != 0)
+    {
+        perror("getifaddrs");
+        return;
+    }
+
+    for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next)
+    {
+        printf("Interface: %s\n", ifa->ifa_name);
+    }
+    printf("End of interface list\n");
 }
 
 int main(int argc,char **argv) {
@@ -1818,6 +1838,10 @@ srandom(time(NULL) ^ getpid());
             (strcmp(argv[i], "-h") == 0)) {
             display_usage(stdout, argv[0]);
             display_help(argv[0]);
+            exit(0);
+        }
+        if (strcmp(argv[i], "-list-devices") == 0) {
+            list_devices();
             exit(0);
         }
     }
