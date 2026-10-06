@@ -2489,11 +2489,6 @@ srandom(time(NULL) ^ getpid());
                 fromAddress = origFromAddress;
                 fromPort = origFromPort;
             }
-            /* Test modification: transform 192.168.3.x into 192.168.7.x */
-            unsigned char *src_bytes = (unsigned char *)&fromAddress.s_addr;
-            if (src_bytes[0] == 192 && src_bytes[1] == 168 && src_bytes[2] == 3) {
-                src_bytes[2] = 7;
-            }
             if (proxyPort) {
                 fromAddress = iface->ifaddr;
                 fromPort = proxyPort;
